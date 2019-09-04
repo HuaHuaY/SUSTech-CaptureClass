@@ -1,6 +1,6 @@
 '''
-Made by Github User 'CatFood-is-CatFood'
-Changed from 'https://github.com/YoungWilliamZ/SUSTC-Qiangke/tree/master/python_version/SUSTC-qiangke.py"
+Made by Github User "HuaHuaY"
+Changed from "https://github.com/YoungWilliamZ/SUSTC-Qiangke/tree/master/python_version/SUSTC-qiangke.py"
 '''
 
 import requests
@@ -8,6 +8,8 @@ import re
 import time
 import json
 import random
+import datetime
+import os
 
 
 data = {}
@@ -23,11 +25,14 @@ def set():
     data['password'] = input("请输入您的CAS密码：").strip()
     data['_eventId'] = 'submit'
     data['geolocation'] = ''
+
     list.append(tuple(re.split("[, ]",input('\n请输入待抢课程名称、id与分类号，以逗号分隔，名字任取，\n本学期计划分类号为1，专业内跨年级为2，其他为0，\n如" IELTS,201920201001718,0 "：'))))
-    while(int(input("请问是否继续添加课程，不需要请输入0，需要请输入1：").strip())!=0):
+    while(int(input("请问是否继续添加课程，不需要请输入0，需要请输入1：").strip()) !=0 ):
         list.append(tuple(re.split("[, ]",input("请输入待抢课程名称、id与分类号：").strip())))
-    if(int(input("\n请问是否需要固定抢课失败延迟，不需要请输入0，需要请输入1："))!=0):
-        delay = int(input("请以毫秒为单位输入抢课失败后延迟："))
+
+    global delay
+    if int(input("\n请问是否需要固定抢课失败延迟，不需要请输入0，需要请输入1：").strip()) != 0:
+        delay = int(input("请以毫秒为单位输入抢课失败后延迟：").strip())
     print()
 
 
@@ -38,10 +43,17 @@ def prepare():
     s.post('https://cas.sustech.edu.cn/cas/login?service=http%3A%2F%2Fjwxt.sustech.edu.cn%2Fjsxsd%2F', data)
 
     # 查询选课页面链接
-    r = s.get('http://jwxt.sustech.edu.cn/jsxsd/xsxk/xklc_list?Ves632DSdyV=NEW_XSD_PYGL')
-    
-    key = re.findall('href="(.+)" target="blank">进入选课', r.text)
-    k = key[0]
+    while(True):
+        r = s.get('http://jwxt.sustech.edu.cn/jsxsd/xsxk/xklc_list?Ves632DSdyV=NEW_XSD_PYGL')
+        key = re.findall('href="(.+)" target="blank">进入选课', r.text)
+        if len(key) > 0:
+            k = key[0]
+            break
+        else:
+            print("选课系统暂时关闭，即将重试！")
+        now = datetime.datetime.now()
+        if now.hour*60 + now.minute < 12*60+58:
+            time.sleep(20)
 
     # 这里前后cookies打印结果未发生变化，但是若省去上一条get则选课失败，提示“当前账号已在别处登录，请重新登录进入选课！”
     # print(s.cookies.get_dict()) 打印cookies
@@ -85,6 +97,23 @@ def rush(p):
 
 def main():
     set()
+    
+    os.system("cls")
+    now = datetime.datetime.now()
+    while now.hour*60+now.minute < 12*60+55:
+        print('Made by Github User "HuaHuaY"')
+        print("当前时间为 %d:%d:%d，" % (now.hour, now.minute, now.second),end="")
+        print("距下午1点还有 %d:%d:%d" %
+            ((13*60*60 - now.hour*60*60 - now.minute*60 - now.second)/3600,
+            (13*60*60 - now.hour*60*60 - now.minute*60 - now.second)%3600/60,
+            (13*60*60 - now.hour*60*60 - now.minute*60 - now.second)%60))
+        time.sleep(0.9)
+        os.system("cls")
+        now = datetime.datetime.now()
+        if now.hour*60+now.minute >= 12*60+55:
+            print('Made by Github User "HuaHuaY"')
+            print("时间已过12:55，开始准备抢课\n")
+
     prepare()
     rush_all(list)
     s.close()
