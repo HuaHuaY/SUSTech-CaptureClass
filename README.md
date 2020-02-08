@@ -1,6 +1,6 @@
 # SUSTech-CaptureClass
 
-This is a program which is used to capture class in SUSTech subject system, for learning only.
+This is a program which is used to capture class in SUSTech class system, for learning only.
 Applicable to the "Select and Get" mode, which is the mode of the summer term and the second round of spring and autumn terms.
 
 ## Download
