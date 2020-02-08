@@ -1,5 +1,4 @@
 '''
-Made by Github User "HuaHuaY"
 Changed from "https://github.com/YoungWilliamZ/SUSTC-Qiangke/tree/master/python_version/SUSTC-qiangke.py"
 '''
 
@@ -28,12 +27,15 @@ def config():
     logInData['username'] = input("请输入您的CAS账号：").strip()
     logInData['password'] = getpass("请输入您的CAS密码：").strip()
     logInData['_eventId'] = 'submit'
-    logInData['geolocation'] = ''
+
+    # 登录验证密码正确性
+    while len(findall('请输入您的用户名和密码.', logIn().text)) != 0:
+        logInData['password'] = getpass("密码错误！请重新输入密码：").strip()
 
     if path.exists(classJsonName) and path.isfile(classJsonName):
         print("检索到JSON课程配置文件")
         global classList
-        with open(classJsonName, "r") as f:
+        with open(classJsonName, "r", encoding="utf8") as f:
             classList = load(f)["classList"]
     else:
         p = tuple(split("[, ]", input(
@@ -54,11 +56,24 @@ def config():
     print()
 
 
+def logIn():
+    # CAS登录并跳转教务系统
+    response = session.get(
+        'https://cas.sustech.edu.cn/cas/login')
+    if 'execution' not in logInData:
+        logInData['execution'] = findall('on" value="(.+?)"', response.text)[0]
+    session.post(
+        'https://cas.sustech.edu.cn/cas/login?service=http%3A%2F%2Fjwxt.sustech.edu.cn%2Fjsxsd%2F', logInData)
+
+    # 查询选课页面链接
+    return session.get(
+        'http://jwxt.sustech.edu.cn/jsxsd/xsxk/xklc_list?Ves632DSdyV=NEW_XSD_PYGL')
+
+
 def wait():
     system("cls")
     now = datetime.now()
     while now.hour*60 + now.minute < 12*60+55:
-        print('Made by Github User "HuaHuaY"')
         print("当前时间为 %d:%d:%d，" % (now.hour, now.minute, now.second), end="")
         print("距下午1点还有 %d:%d:%d" %
               ((13*60*60 - now.hour*60*60 - now.minute*60 - now.second) / 3600,
@@ -68,33 +83,21 @@ def wait():
         system("cls")
         now = datetime.now()
         if now.hour*60 + now.minute >= 12*60+55:
-            print('Made by Github User "HuaHuaY"')
             print("时间已过12:55，开始准备抢课\n")
 
 
-def logIn():
-    # CAS登录并跳转教务系统
-    response = session.get(
-        'https://cas.sustech.edu.cn/cas/login?service=http%3A%2F%2Fjwxt.sustech.edu.cn%2Fjsxsd%2F')
-    logInData['execution'] = findall('on" value="(.+?)"', response.text)[0]
-    session.post(
-        'https://cas.sustech.edu.cn/cas/login?service=http%3A%2F%2Fjwxt.sustech.edu.cn%2Fjsxsd%2F', logInData)
-
-    # 查询选课页面链接
-    while(True):
-        response = session.get(
-            'http://jwxt.sustech.edu.cn/jsxsd/xsxk/xklc_list?Ves632DSdyV=NEW_XSD_PYGL')
-        key = findall('href="(.+)" target="blank">进入选课', response.text)
-        if len(key) > 0:
-            k = key[0]
-            break
-        else:
-            print("选课系统暂时关闭，即将重试！")
+def start():
+    key = findall('href="(.+)" target="blank">进入选课', logIn().text)
+    while(len(key) == 0):
+        print("选课系统暂时关闭，即将重试！")
+        key = findall('href="(.+)" target="blank">进入选课', logIn().text)
         now = datetime.now()
-        if now.hour*60 + now.minute < 12*60+58:
+        if now.hour*60 + now.minute < 12*60+59:
             sleep(20)
 
-    # 这里前后cookies打印结果未发生变化，但是若省去上一条get则选课失败，提示“当前账号已在别处登录，请重新登录进入选课！”
+    k = key[0]
+
+    # 这里前后cookies打印结果未发生变化，但是若省去这条get则选课失败，提示“当前账号已在别处登录，请重新登录进入选课！”
     session.get('http://jwxt.sustech.edu.cn' + k)
 
     print("CAS验证成功")
@@ -143,7 +146,7 @@ def rush(p):
 def main():
     config()
     wait()
-    logIn()
+    start()
     rush_all(classList)
     session.close()
 

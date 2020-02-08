@@ -1,8 +1,9 @@
-# SUSTech-Qiangke
+# SUSTech-CaptureClass
 
-The auto choose-class script to make everybody can have classes they want to have in SUSTech or any College with Qiangzhi System. 南科大抢课，让你一键抢课！
+This is a program which is used to capture class in SUSTech subject system, for learning only.
+Applicable to the "Select and Get" mode, which is the mode of the summer term and the second round of spring and autumn terms.
 
-## Notice
+## Download
 
-For the change of choosing courses mode，this script is no longer useful in the first round of choosing classes in the SUSTech. But it is still useful after the beginning of a new semester.
-
+You can download the program through this [url](https://github.com/HuaHuaY/SUSTech-CaptureClass/releases).
+Other language and platform support is in production.
