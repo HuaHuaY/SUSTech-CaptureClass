@@ -46,8 +46,8 @@ def config():
             classList.append({infor[0]: p[0], infor[1]: p[1], infor[2]: p[2]})
 
         if int(input("是否需要保存课程配置到class.json文件，不需要请输入0，需要请输入1：")) != 0:
-            with open(classJsonName, "w") as f:
-                dump({"classList": classList}, f)
+            with open(classJsonName, "w", encoding="utf8") as f:
+                dump({"classList": classList}, f, ensure_ascii=False)
 
     global delay, is_random_delay
     if int(input("\n请问是否需要固定抢课失败延迟，不需要请输入0，需要请输入1：")) != 0:
@@ -74,8 +74,9 @@ def wait():
     system("cls")
     now = datetime.now()
     while now.hour*60 + now.minute < 12*60+55:
-        print("当前时间为 %d:%d:%d，" % (now.hour, now.minute, now.second), end="")
-        print("距下午1点还有 %d:%d:%d" %
+        print("当前时间为 %02d:%02d:%02d，" %
+              (now.hour, now.minute, now.second), end="")
+        print("距下午1点还有 %02d:%02d:%02d" %
               ((13*60*60 - now.hour*60*60 - now.minute*60 - now.second) / 3600,
                (13*60*60 - now.hour*60*60 - now.minute*60 - now.second) % 3600 / 60,
                   (13*60*60 - now.hour*60*60 - now.minute*60 - now.second) % 60))
