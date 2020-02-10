@@ -13,6 +13,8 @@ from time import sleep
 from requests import Session
 
 infor = ("Name", "Id", "Value")
+URL = ("bxxkOper", "fawxkOper", "bxqjhxkOper",
+       "knjxkOper", "fawxkOper", "ggxxkxkOper")
 logInData = {}
 classJsonName = "captureClassList.json"
 classList = []  # 抢课列表
@@ -39,7 +41,7 @@ def config():
             classList = load(f)["classList"]
     else:
         p = tuple(split("[, ]", input(
-            '\n请输入待抢课程名称、id与分类号，以逗号分隔，名字任取，\n本学期计划分类号为1，专业内跨年级为2，其他为0，\n如" IELTS,201920201001718,0 "：').strip()))
+            '\n请输入待抢课程名称、id与分类号，以逗号分隔，名字任取。').strip()))
         classList.append({infor[0]: p[0], infor[1]: p[1], infor[2]: p[2]})
         while(int(input("请问是否继续添加课程，不需要请输入0，需要请输入1：")) != 0):
             p = tuple(split("[, ]", input("请输入待抢课程名称、id与分类号：").strip()))
@@ -119,15 +121,8 @@ def rush_all(classList):
 def rush(p):
     print(p)
     print('正在抢 %s' % p[infor[0]])
-    if p[infor[2]] == '1':
-        response = session.get(
-            "http://jwxt.sustech.edu.cn/jsxsd/xsxkkc/bxqjhxkOper?jx0404id=%s&xkzy=&trjf=" % p[infor[1]])
-    elif p[infor[2]] == '2':
-        response = session.get(
-            "http://jwxt.sustech.edu.cn/jsxsd/xsxkkc/knjxkOper?jx0404id=%s&xkzy=&trjf=" % p[infor[1]])
-    else:
-        response = session.get(
-            "http://jwxt.sustech.edu.cn/jsxsd/xsxkkc/fawxkOper?jx0404id=%s&xkzy=&trjf=" % p[infor[1]])
+    response = session.get(
+        "http://jwxt.sustech.edu.cn/jsxsd/xsxkkc/%s?jx0404id=%s&xkzy=&trjf=" % (URL[int(p[infor[2]]) - 1], p[infor[1]]))
     result = str(response.content, 'utf-8')
     if result.find("true", 0, len(result)) >= 1:
         print("抢到 " + p[infor[0]] + " 啦")
