@@ -3,7 +3,7 @@
 > Update on 2020-2-8
 > Python版本修改自GitHub用户[YoungWilliamZ](https://github.com/YoungWilliamZ)的[SUSTC-Qiangke](https://github.com/YoungWilliamZ/SUSTC-Qiangke)项目
 > 
-> 本脚本需要输入CAS账号密码使用，但未以任何形式上传CAS账号密码 
+> 本脚本需要输入CAS账号密码使用，但未以任何形式向除CAS系统外网站上传账号密码 
 
 ## 运行环境
 
